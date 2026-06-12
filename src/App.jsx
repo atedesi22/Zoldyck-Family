@@ -1,122 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Shield, Trophy, ShoppingBag, Bell, Menu, X, Users2 } from 'lucide-react';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Import de tes composants de pages
+// import HomePage from './pages/home/HomePage';
+import HomePage from './pages/home';
+import BottomNavbar from './components/layout/BottomNavbar';
+import Navbar from './components/layout/Navbar';
+// import TeamsPage from './pages/teams/TeamsPage'; // À importer quand tu les créeras
+// import AnnouncementsPage from './pages/announcements/AnnouncementsPage';
+// import ShopPage from './pages/shop/ShopPage';
+
+const glassNavbar = "backdrop-blur-md bg-[#080B10]/70 border-b border-[#1A1D24]/40";
+const glassFooter = "backdrop-blur-md bg-[#1A1D24]/40 border-t border-[#1A1D24]/30";
+
+export default function App() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { name: 'Accueil', href: '/', icon: <Shield className="w-4 h-4" /> },
+    { name: 'Teams', href: '/teams', icon: <Users2 className="w-4 h-4" /> },
+    { name: 'Annonces', href: '/announcements', icon: <Bell className="w-4 h-4" /> },
+    { name: 'Shop', href: '/shop', icon: <ShoppingBag className="w-4 h-4" /> },
+  ];
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Router>
+      <div className="min-h-screen bg-[#080B10] text-[#EBEBEB] font-body flex flex-col justify-between selection:bg-[#EE1C25] selection:text-white">
+        
+        {/* Barre du haut (Masquée sur mobile, visible sur PC) */}
+        <Navbar links={navLinks} />
 
-      <div className="ticks"></div>
+        {/* CONTENU PRINCIPAL */}
+        {/* Note le padding : pt-20 pour laisser la place au header sur PC, pb-20 pour laisser la place au footer sur Mobile */}
+        <main className="flex-grow pt-0 md:pt-20 pb-20 md:pb-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                {/* <Route path="/teams" element={<TeamsPage />} /> */}
+                {/* <Route path="/announcements" element={<AnnouncementsPage />} /> */}
+                {/* <Route path="/shop" element={<ShopPage />} /> */}
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
+        </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Barre du bas (Visible sur mobile, masquée sur PC) */}
+        <BottomNavbar links={navLinks} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* FOOTER DESKTOP UNIQUE (Masqué sur mobile pour un rendu épuré style App) */}
+        <footer className="hidden md:block backdrop-blur-md bg-[#1A1D24]/40 border-t border-[#1A1D24]/30 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <p className="font-gaming uppercase tracking-widest text-sm font-bold">
+              © {new Date().getFullYear()} <span className="text-[#EE1C25]">Zoldyck Family</span>. Tous droits réservés.
+            </p>
+          </div>
+        </footer>
+
+      </div>
+    </Router>
+  );
 }
-
-export default App
