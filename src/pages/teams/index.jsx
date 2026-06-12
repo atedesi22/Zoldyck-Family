@@ -27,7 +27,7 @@ export default function TeamsPage() {
   const filteredPlayers = mockPlayers.filter(player => player.gender === activeTab);
 
   return (
-    <div className="min-h-screen bg-[#080B10] text-[#EBEBEB] px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-[#080B10] text-[#EBEBEB] px-4 sm:px-6 lg:px-8 pt-24 md:pt-32 pb-12">
       <div className="max-w-7xl mx-auto">
         
         {/* EN-TÊTE DE LA PAGE */}
