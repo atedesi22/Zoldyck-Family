@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Swords, Crown, Users } from 'lucide-react';
+import { Swords, Crown, Users, Target, Shield } from 'lucide-react';
 
-// --- INSTRUCTIONS IMPORTS : Vérifie bien ces 3 lignes ---
-// Si tu as configuré l'alias @, tu peux utiliser : '@/data/players'
+// Imports de tes données et composants
 import { clanPlayers } from '../../data/players';
 import PlayerCard from '../../components/modules/teams/PlayerCard';
 import PlayerDetailCard from '../../components/ui/PlayerDetailCard';
@@ -12,13 +11,8 @@ export default function TeamsPage() {
   const [activeDivision, setActiveDivision] = useState('T1');
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
-  // SÉCURITÉ EN CAS D'ECHEC D'IMPORTATION DES JOUEURS
   const playersList = clanPlayers || [];
-
-  // Filtrage sécurisé par division
   const divisionPlayers = playersList.filter(player => player && player.division === activeDivision);
-  
-  // Séparation titulaires / remplaçants
   const titulaires = divisionPlayers.filter(p => p.type === 'titulaire');
   const remplacants = divisionPlayers.filter(p => p.type === 'remplacant');
 
@@ -33,17 +27,81 @@ export default function TeamsPage() {
     <div className="min-h-screen bg-[#080B10] text-[#EBEBEB] px-4 sm:px-6 lg:px-8 pt-24 md:pt-32 pb-24 relative">
       <div className="max-w-7xl mx-auto">
         
-        {/* EN-TÊTE */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EE1C25]/10 border border-[#EE1C25]/20 text-xs font-gaming uppercase tracking-widest text-[#EE1C25] mb-4">
-            <Swords className="w-3.5 h-3.5" /> Hiérarchie Compétitive
-          </span>
-          <h1 className="text-4xl md:text-6xl font-black font-gaming uppercase tracking-tight">
-            Rosters <span className="text-[#EE1C25]">Zoldyck</span>
-          </h1>
+        {/* ========================================================================= */}
+        {/* CARTE DE PRÉSENTATION GÉANTE DE L'ÉQUIPE (HERO BANNER)                    */}
+        {/* ========================================================================= */}
+        <div className="relative w-full rounded-3xl bg-[#1A1D24]/20 border border-[#1A1D24]/40 p-6 md:p-10 overflow-hidden mb-16 shadow-[0_0_50px_rgba(0,0,0,0.5)] group">
+          
+          {/* Arrière-plan stylisé avec reflets et grille e-sport */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE1C25]/10 via-transparent to-[#0E3BF0]/5 opacity-30 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#EE1C25]/5 blur-[120px] rounded-full pointer-events-none" />
+          
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* TEXTES ET INFOS (NOM, SEXE, RÔLE, ARME) */}
+            <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EE1C25]/10 border border-[#EE1C25]/20 text-xs font-gaming uppercase tracking-widest text-[#EE1C25]">
+                <Swords className="w-3.5 h-3.5" /> Division Officielle
+              </span>
+              
+              <h1 className="text-4xl sm:text-6xl font-black font-gaming uppercase tracking-tight leading-none text-[#EBEBEB]">
+                Rosters <span className="text-[#EE1C25]">Zoldyck</span>
+              </h1>
+              
+              <p className="text-sm md:text-base text-[#A1A1AA] max-w-xl font-body leading-relaxed">
+                Découvrez l'élite compétitive du clan. Une hiérarchie stricte divisée en 4 catégories où chaque membre combat pour maintenir le win-rate au sommet de la scène CODM.
+              </p>
+
+              {/* Ligne d'infos contextuelles (Sexe global, Rôle dominant, Arme favorite du clan) */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2 text-xs font-gaming uppercase tracking-wider text-[#A1A1AA]">
+                <span className="px-3 py-1.5 bg-[#080B10]/60 border border-[#1A1D24] rounded-lg">
+                  Format : <strong className="text-[#0E3BF0]">Mixte (M/F)</strong>
+                </span>
+                <span className="px-3 py-1.5 bg-[#080B10]/60 border border-[#1A1D24] rounded-lg">
+                  Style : <strong className="text-[#EE1C25]">Hyper-Agressif</strong>
+                </span>
+                <span className="px-3 py-1.5 bg-[#080B10]/60 border border-[#1A1D24] rounded-lg">
+                  Meta : <strong className="text-[#FFD700]">SMG / AR</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* EN-TÊTE DROITE : PHOTO DE PROFIL DU CLAN / LOGO ET LE RANG GLOBALE */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-center space-y-4">
+              
+              {/* PHOTO DE PROFIL / LOGO DU CLAN (Placée juste au-dessus du Rang) */}
+              <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl p-[3px] bg-gradient-to-b from-[#1A1D24] to-[#080B10] group-hover:from-[#EE1C25] group-hover:to-[#0E3BF0] transition-all duration-500 shadow-2xl">
+                <div className="w-full h-full rounded-xl overflow-hidden bg-[#080B10] flex items-center justify-center border border-[#080B10]">
+                  <img 
+                    src="/assets/img/logo-zoldyck.webp" 
+                    alt="Zoldyck Logo" 
+                    className="w-[85%] h-[85%] object-contain transform group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+              </div>
+
+              {/* BLOC DE RANG GLOBAL & RATIO DE L'ÉQUIPE */}
+              <div className="w-full max-w-xs grid grid-cols-2 gap-3 bg-[#080B10]/80 backdrop-blur-md border border-[#1A1D24] p-4 rounded-2xl text-center shadow-lg">
+                <div className="flex flex-col justify-center items-center">
+                  <Shield className="w-4 h-4 text-[#FFD700] mb-1" />
+                  <p className="text-[9px] uppercase font-gaming text-[#A1A1AA] tracking-wider">Rang Global</p>
+                  <p className="text-sm font-black text-[#FFD700] uppercase tracking-wide mt-0.5">Légendaire</p>
+                </div>
+                <div className="flex flex-col justify-center items-center border-l border-[#1A1D24]/60">
+                  <Target className="w-4 h-4 text-[#EE1C25] mb-1" />
+                  <p className="text-[9px] uppercase font-gaming text-[#A1A1AA] tracking-wider">K/D Moyen</p>
+                  <p className="text-base font-black text-[#EE1C25] mt-0.5">2.45</p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
         </div>
 
-        {/* SÉLECTEUR DE DIVISION */}
+        {/* ========================================================================= */}
+        {/* SÉLECTEUR DE DIVISION ET LISTING DES JOUEURS                             */}
+        {/* ========================================================================= */}
         <div className="flex justify-center mb-16 overflow-x-auto pb-4 scrollbar-none">
           <div className="flex p-1.5 rounded-xl bg-[#1A1D24]/80 border border-[#1A1D24]/40 relative z-10 w-full max-w-2xl min-w-[340px]">
             {divisions.map((div) => {
@@ -73,7 +131,7 @@ export default function TeamsPage() {
           </div>
         </div>
 
-        {/* LISTINGS DES JOUEURS SÉCURISÉ */}
+        {/* LISTINGS DES JOUEURS */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeDivision}
@@ -128,7 +186,7 @@ export default function TeamsPage() {
           </motion.div>
         </AnimatePresence>
 
-        {/* OVERLAY DE DÉTAILS AVEC TILT 3D */}
+        {/* OVERLAY DE DÉTAILS */}
         <AnimatePresence>
           {selectedPlayer && (
             <PlayerDetailCard 
