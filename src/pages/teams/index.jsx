@@ -23,7 +23,7 @@ const mockPlayers = [
 export default function TeamsPage() {
   const [activeTab, setActiveTab] = useState('male'); // 'male' ou 'female'
 
-  // Filtrer les joueurs selon l'onglet actif
+  // Filtrer les joueurs selon l'onglet actif dfsfsd
   const filteredPlayers = mockPlayers.filter(player => player.gender === activeTab);
 
   return (
