@@ -73,7 +73,7 @@ export default function TeamsPage() {
               <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl p-[3px] bg-gradient-to-b from-[#1A1D24] to-[#080B10] group-hover:from-[#EE1C25] group-hover:to-[#0E3BF0] transition-all duration-500 shadow-2xl">
                 <div className="w-full h-full rounded-xl overflow-hidden bg-[#080B10] flex items-center justify-center border border-[#080B10]">
                   <img 
-                    src="/assets/img/logo-zoldyck.webp" 
+                    src="/logo.jpg" 
                     alt="Zoldyck Logo" 
                     className="w-[85%] h-[85%] object-contain transform group-hover:scale-110 transition-transform duration-500"
                   />
