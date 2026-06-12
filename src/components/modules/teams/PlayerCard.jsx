@@ -39,6 +39,10 @@ export default function PlayerCard({ player }) {
           )}
         </div>
 
+                  {/* Dans components/modules/teams/PlayerCard.jsx */}
+          <p className="text-[10px] font-gaming uppercase tracking-widest text-[#A1A1AA] mb-1">
+            Roster {player.gender === 'female' ? 'Féminin' : 'Masculin'}
+          </p>
         {/* Pseudo du joueur */}
         <h3 className="text-2xl font-black font-gaming uppercase tracking-wide text-[#EBEBEB] group-hover:text-[#EE1C25] transition-colors duration-300">
           {player.pseudo}
