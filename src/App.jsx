@@ -8,6 +8,7 @@ import { Shield, Trophy, ShoppingBag, Bell, Menu, X, Users2 } from 'lucide-react
 import HomePage from './pages/home';
 import BottomNavbar from './components/layout/BottomNavbar';
 import Navbar from './components/layout/Navbar';
+import TeamsPage from './pages/teams';
 // import TeamsPage from './pages/teams/TeamsPage'; // À importer quand tu les créeras
 // import AnnouncementsPage from './pages/announcements/AnnouncementsPage';
 // import ShopPage from './pages/shop/ShopPage';
@@ -44,7 +45,7 @@ export default function App() {
             >
               <Routes>
                 <Route path="/" element={<HomePage />} />
-                {/* <Route path="/teams" element={<TeamsPage />} /> */}
+                <Route path="/teams" element={<TeamsPage />} />
                 {/* <Route path="/announcements" element={<AnnouncementsPage />} /> */}
                 {/* <Route path="/shop" element={<ShopPage />} /> */}
               </Routes>
