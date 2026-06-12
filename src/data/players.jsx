@@ -186,6 +186,24 @@ export const clanPlayers = [
     device: "iPad Air 4",
     playstyle: "Joueuse de soutien, spécialisée dans le contrôle de zone et la suppression des ennemis avec des tirs de suppression.",
     socials: {}
-  }
+  },
+  {
+    id: 10,
+    pseudo: "Illumi",
+    gender: "male",
+    division: "T1",
+    type: "remplacant",
+    isCaptain: false,
+    role: "Sniper",
+    favoriteWeapon: "M82",
+    photo: "/assets/img/players/illumi.webp",
+    rank: "Grand Maître II",
+    kd: "2.20",
+    precision: "45.0%",
+    joinedAt: "Avril 2025",
+    device: "iPhone 15 Pro",
+    playstyle: "Sniper de réserve, prêt à intervenir dans les modes où un tir de précision peut faire la différence.",
+    socials: {}
+  },
   // Tu pourras dupliquer et remplir pour les divisions T2, T3, T4 de la même manière...
 ];
