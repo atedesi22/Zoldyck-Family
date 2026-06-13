@@ -109,7 +109,7 @@ export default function MatchesPage() {
                 </div>
                 <div className="flex items-center justify-between my-2 text-center">
                   <div className="flex-1 flex flex-col items-center">
-                    <img src="/assets/img/logo-zoldyck.webp" className="w-14 h-14 object-contain mb-2" alt="Zoldyck" onError={(e)=>{e.target.src="https://via.placeholder.com/50"}} />
+                    <img src="/logo.jpg" className="w-14 h-14 object-contain mb-2" alt="Zoldyck" onError={(e)=>{e.target.src="https://via.placeholder.com/50"}} />
                     <span className="font-gaming uppercase text-sm font-black text-[#EBEBEB]">Zoldyck</span>
                   </div>
                   <div className="px-4 py-2 bg-[#080B10] border border-[#1A1D24] rounded-xl font-gaming text-2xl font-black text-[#EBEBEB]">3 - 1</div>

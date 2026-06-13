@@ -11,7 +11,7 @@ import Navbar from './components/layout/Navbar';
 import TeamsPage from './pages/teams';
 import MatchesPage from './pages/matches';
 // import TeamsPage from './pages/teams/TeamsPage'; // À importer quand tu les créeras
-// import AnnouncementsPage from './pages/announcements/AnnouncementsPage';
+import AnnoncesPage from './pages/announcements';
 // import ShopPage from './pages/shop/ShopPage';
 
 const glassNavbar = "backdrop-blur-md bg-[#080B10]/70 border-b border-[#1A1D24]/40";
@@ -49,7 +49,7 @@ export default function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/teams" element={<TeamsPage />} />
                 <Route path="/matches" element={<MatchesPage />} />
-                {/* <Route path="/announcements" element={<AnnouncementsPage />} /> */}
+                <Route path="/announcements" element={<AnnoncesPage />} />
                 {/* <Route path="/shop" element={<ShopPage />} /> */}
               </Routes>
             </motion.div>
