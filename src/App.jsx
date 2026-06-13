@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Shield, Trophy, ShoppingBag, Bell, Menu, X, Users2 } from 'lucide-react';
+import { Shield, Trophy, ShoppingBag, Bell, Menu, X, Users2, Swords } from 'lucide-react';
 
 // Import de tes composants de pages
 // import HomePage from './pages/home/HomePage';
@@ -9,6 +9,7 @@ import HomePage from './pages/home';
 import BottomNavbar from './components/layout/BottomNavbar';
 import Navbar from './components/layout/Navbar';
 import TeamsPage from './pages/teams';
+import MatchesPage from './pages/matches';
 // import TeamsPage from './pages/teams/TeamsPage'; // À importer quand tu les créeras
 // import AnnouncementsPage from './pages/announcements/AnnouncementsPage';
 // import ShopPage from './pages/shop/ShopPage';
@@ -22,6 +23,7 @@ export default function App() {
   const navLinks = [
     { name: 'Accueil', href: '/', icon: <Shield className="w-4 h-4" /> },
     { name: 'Teams', href: '/teams', icon: <Users2 className="w-4 h-4" /> },
+    { name: 'Matches', href: '/matches', icon: <Swords className="w-4 h-4" /> },
     { name: 'Annonces', href: '/announcements', icon: <Bell className="w-4 h-4" /> },
     { name: 'Shop', href: '/shop', icon: <ShoppingBag className="w-4 h-4" /> },
   ];
@@ -46,6 +48,7 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/teams" element={<TeamsPage />} />
+                <Route path="/matches" element={<MatchesPage />} />
                 {/* <Route path="/announcements" element={<AnnouncementsPage />} /> */}
                 {/* <Route path="/shop" element={<ShopPage />} /> */}
               </Routes>
@@ -62,6 +65,15 @@ export default function App() {
             <p className="font-gaming uppercase tracking-widest text-sm font-bold">
               © {new Date().getFullYear()} <span className="text-[#EE1C25]">Zoldyck Family</span>. Tous droits réservés.
             </p>
+            <p className="text-xs text-[#A1A1AA] mt-1">
+              Conçu pour l'e-sport d'élite sur Call of Duty: Mobile.
+            </p>
+          </div>
+          {/* Liens secondaires / Réseaux */}
+          <div className="flex gap-6 text-sm text-[#A1A1AA] font-gaming uppercase tracking-wider">
+            <a href="/mentions" className="hover:text-[#EE1C25] transition-colors">Mentions Légales</a>
+            <a href="https://discord.gg/votre-lien" target="_blank" rel="noreferrer" className="hover:text-[#0E3BF0] transition-colors">Discord</a>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-[#EE1C25] transition-colors">Instagram</a>
           </div>
         </footer>
 
