@@ -80,48 +80,63 @@ export default function AnnoncesPage() {
 
   const [isBotOpen, setIsBotOpen] = useState(false);
   
-  // États du Chatbot
+  // TOUS LES ÉTATS DU CHATBOT (Regroupés et sécurisés)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [answers, setAnswers] = useState({});
   const [isFormComplete, setIsFormComplete] = useState(false);
+  const [photoUploaded, setPhotoUploaded] = useState(false);
+  const [avatarUploaded, setAvatarUploaded] = useState(false);
 
   const chatEndRef = useRef(null);
 
-  // Auto-scroll vers le bas du chat à chaque nouveau message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
 
-  // Initialisation du Bot au premier clic
   const handleOpenBot = () => {
     setIsBotOpen(true);
     setCurrentQuestionIndex(0);
     setAnswers({});
     setIsFormComplete(false);
+    setPhotoUploaded(false);
+    setAvatarUploaded(false);
     setChatHistory([
-      { sender: 'bot', text: "Salutations recrue. Je suis NovaAI, l'assistant tactique de Zoldyck. Je vais évaluer ton profil pour le clan." },
+      { sender: 'bot', text: "Salutations recrue. Je suis NovaAI, l'assistant tactique de Zoldyck. Commençons ton entretien d'intégration." },
       { sender: 'bot', text: RECRUITMENT_QUESTIONS[0].text }
     ]);
   };
 
-  // Envoi via champ texte libre
+  const advanceChat = (userResponse, nextIndex) => {
+    if (nextIndex < RECRUITMENT_QUESTIONS.length) {
+      setCurrentQuestionIndex(nextIndex);
+      setTimeout(() => {
+        setChatHistory(prev => [...prev, { sender: 'bot', text: RECRUITMENT_QUESTIONS[nextIndex].text }]);
+      }, 500);
+    } else {
+      setIsFormComplete(true);
+      setTimeout(() => {
+        setChatHistory(prev => [
+          ...prev, 
+          { sender: 'bot', text: "Analyse terminée ! Ta fiche de recrutement complète a été générée. Tu peux maintenant la transmettre au Staff." }
+        ]);
+      }, 500);
+    }
+  };
+
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!inputValue.trim() || isFormComplete) return;
 
     const currentQuestion = RECRUITMENT_QUESTIONS[currentQuestionIndex];
-    const userResponse = inputValue.trim();
-
-    setAnswers(prev => ({ ...prev, [currentQuestion.id]: userResponse }));
-    setChatHistory(prev => [...prev, { sender: 'user', text: userResponse }]);
+    setAnswers(prev => ({ ...prev, [currentQuestion.id]: inputValue.trim() }));
+    setChatHistory(prev => [...prev, { sender: 'user', text: inputValue.trim() }]);
     setInputValue('');
 
-    advanceChat(userResponse, currentQuestionIndex + 1);
+    advanceChat(inputValue.trim(), currentQuestionIndex + 1);
   };
 
-  // Sélection via boutons d'options d'un clic
   const handleSelectOption = (option) => {
     if (isFormComplete) return;
     const currentQuestion = RECRUITMENT_QUESTIONS[currentQuestionIndex];
@@ -132,15 +147,22 @@ export default function AnnoncesPage() {
     advanceChat(option, currentQuestionIndex + 1);
   };
 
-  // Simulation d'envoi des images
   const handleSimulateUpload = (type) => {
-    const updatedFiles = { ...simulatedFiles, [type]: true };
-    setSimulatedFiles(updatedFiles);
+    let currentPhoto = photoUploaded;
+    let currentAvatar = avatarUploaded;
 
-    setChatHistory(prev => [...prev, { sender: 'user', text: `📸 ${type === 'photo' ? 'Photo de moi' : 'Lien/Capture de mon Avatar'} téléversée.` }]);
+    if (type === 'photo') {
+      setPhotoUploaded(true);
+      currentPhoto = true;
+      setChatHistory(prev => [...prev, { sender: 'user', text: "📸 Photo de moi téléversée avec succès." }]);
+    } else {
+      setAvatarUploaded(true);
+      currentAvatar = true;
+      setChatHistory(prev => [...prev, { sender: 'user', text: "📸 Capture d'écran de mon profil CODM téléversée." }]);
+    }
 
-    if (updatedFiles.photo && updatedFiles.avatar) {
-      setAnswers(prev => ({ ...prev, fichiers: "Images fournies et prêtes pour WhatsApp" }));
+    if (currentPhoto && currentAvatar) {
+      setAnswers(prev => ({ ...prev, fichiers: "Images fournies" }));
       advanceChat("Images fournies", currentQuestionIndex + 1);
     }
   };
@@ -351,15 +373,29 @@ export default function AnnoncesPage() {
                       }`}>{msg.text}</div>
                     </div>
                   ))}
+                  
+                  {isFormComplete && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-[#080B10] border border-[#1A1D24] rounded-xl p-4 space-y-2 mt-2">
+                      <p className="text-[10px] font-gaming uppercase tracking-wider text-[#FFD700] flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Fiche d'évaluation :
+                      </p>
+                      <div className="text-[11px] font-body space-y-1 text-[#A1A1AA]">
+                        <p>• <strong className="text-[#EBEBEB]">Pseudo:</strong> {answers.pseudo}</p>
+                        <p>• <strong className="text-[#EBEBEB]">Roster:</strong> {answers.sexe}</p>
+                        <p>• <strong className="text-[#EBEBEB]">Device:</strong> {answers.device}</p>
+                        <p>• <strong className="text-[#EBEBEB]">Niveau:</strong> {answers.niveau}</p>
+                      </div>
+                    </motion.div>
+                  )}
                   <div ref={chatEndRef} />
                 </div>
 
-                {/* OPTIONS CLICABLES / FORMULAIRES DE BAS DE CONVERSATION */}
+                {/* ZONE DE CONTACT / INTERACTIONS */}
                 <div className="p-4 bg-[#080B10] border-t border-[#1A1D24] space-y-3">
                   
-                  {/* CAS 1 : Boutons d'options d'un clic */}
+                  {/* OPTIONS CLICABLES */}
                   {!isFormComplete && currentQuestion?.type === 'options' && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 animate-fadeIn">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       {currentQuestion.options.map((opt) => (
                         <button
                           key={opt}
@@ -372,45 +408,45 @@ export default function AnnoncesPage() {
                     </div>
                   )}
 
-                  {/* CAS 2 : Zone de téléversement (Fichiers Photo & Avatar) */}
+                  {/* UPLOADS IMAGES */}
                   {!isFormComplete && currentQuestion?.type === 'files' && (
-                    <div className="grid grid-cols-2 gap-3 animate-fadeIn">
+                    <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => handleSimulateUpload('photo')}
-                        disabled={simulatedFiles.photo}
+                        disabled={photoUploaded}
                         className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 text-xs font-gaming uppercase tracking-wider transition-all ${
-                          simulatedFiles.photo 
+                          photoUploaded 
                             ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' 
                             : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
                         }`}
                       >
                         <Camera className="w-5 h-5" />
-                        <span>{simulatedFiles.photo ? "✓ Photo Ok" : "Uploader ma Photo"}</span>
+                        <span>{photoUploaded ? "✓ Photo Reçue" : "Photo de moi"}</span>
                       </button>
                       
                       <button
                         onClick={() => handleSimulateUpload('avatar')}
-                        disabled={simulatedFiles.avatar}
+                        disabled={avatarUploaded}
                         className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 text-xs font-gaming uppercase tracking-wider transition-all ${
-                          simulatedFiles.avatar 
+                          avatarUploaded 
                             ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' 
                             : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
                         }`}
                       >
                         <UserCheck className="w-5 h-5" />
-                        <span>{simulatedFiles.avatar ? "✓ Avatar Ok" : "Uploader mon Avatar"}</span>
+                        <span>{avatarUploaded ? "✓ Avatar Reçu" : "Mon Profil CODM"}</span>
                       </button>
                     </div>
                   )}
 
-                  {/* CAS 3 : Saisie texte standard pour les questions ouvertes */}
+                  {/* SAISIE TEXTE */}
                   {!isFormComplete && currentQuestion?.type === 'text' && (
                     <form onSubmit={handleSendMessage} className="flex gap-2">
                       <input
                         type="text"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Écris ton texte ici..."
+                        placeholder="Écris ta réponse ici..."
                         className="flex-1 bg-[#1A1D24]/60 border border-[#1A1D24] rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-[#EE1C25]/60 text-[#EBEBEB] font-body"
                       />
                       <button type="submit" disabled={!inputValue.trim()} className="p-2.5 rounded-xl bg-[#EE1C25] text-[#080B10] hover:bg-[#EE1C25]/90 transition-colors disabled:opacity-30 flex items-center justify-center shrink-0">
@@ -419,20 +455,20 @@ export default function AnnoncesPage() {
                     </form>
                   )}
 
-                  {/* BOUTON GLOBAL FINALE WHATSAPP */}
+                  {/* BOUTON WHATSAPP SÉCURISÉ */}
                   <div className="pt-1">
                     {isFormComplete ? (
                       <a 
                         href={getWhatsAppLink()}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full py-3 bg-[#25D366] text-[#080B10] font-gaming font-black text-xs uppercase tracking-widest rounded-xl shadow-[0_0_20px_rgba(37,211,102,0.3)] flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95"
+                        className="w-full py-3 bg-[#25D366] text-[#080B10] font-gaming font-black text-xs uppercase tracking-widest rounded-xl shadow-[0_0_20px_rgba(37,211,102,0.3)] flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95 text-center"
                       >
-                        Transmettre le dossier via WhatsApp <ArrowUpRight className="w-4 h-4" />
+                        Transmettre via WhatsApp <ArrowUpRight className="w-4 h-4" />
                       </a>
                     ) : (
                       <button disabled className="w-full py-3 bg-[#1A1D24] border border-[#1A1D24] text-[#A1A1AA]/30 font-gaming font-black text-xs uppercase tracking-widest rounded-xl cursor-not-allowed text-center flex items-center justify-center gap-2">
-                        {currentQuestion?.type === 'files' ? "Fournir les deux images requises..." : "Entretien en cours..."}
+                        Entretien en cours...
                       </button>
                     )}
                   </div>
