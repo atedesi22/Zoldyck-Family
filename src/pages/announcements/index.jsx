@@ -59,6 +59,8 @@ const RECRUITMENT_QUESTIONS = [
   { id: 'constance', text: "Quelle est ta constance de jeu ?", type: 'options', options: ['Tout le temps (Hardcore)', 'Souvent (Régulier)', 'Rarement (Occasionnel)'] },
   { id: 'source', text: "Où as-tu entendu parler du clan Zoldyck ?", type: 'options', options: ['Réseaux Sociaux', 'En Jeu (Matchs)', 'Bouche-à-oreille / Ami'] },
   { id: 'motivation', text: "En quelques mots, quelle est ta motivation principale à intégrer le clan ?", type: 'text' },
+  { id: 'telephone', text: "Quel est ton numéro de téléphone pour que le staff puisse te joindre ? (Avec l'indicatif pays, ex: +237...)", type: 'text' },
+  { id: 'contact_platform', text: "Sur quelle plateforme préfères-tu que le staff te recontacte ?", type: 'options', options: ['WhatsApp', 'Discord', 'Les deux conviennent'] },
   { id: 'fichiers', text: "Pour finaliser, télécharge une image de toi et une capture de ton avatar/profil en jeu :", type: 'files' }
 ];
 
@@ -87,11 +89,10 @@ export default function AnnoncesPage() {
   const [answers, setAnswers] = useState({});
   const [isFormComplete, setIsFormComplete] = useState(false);
 
-  // ÉTATS POUR LES VRAIS FICHIERS LOCAUX
+  // ÉTATS POUR LES FICHIERS LOCAUX
   const [photoFile, setPhotoFile] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
 
-  // Références pour déclencher les clics sur les inputs masqués
   const photoInputRef = useRef(null);
   const avatarInputRef = useRef(null);
   const chatEndRef = useRef(null);
@@ -152,14 +153,11 @@ export default function AnnoncesPage() {
     advanceChat(option, currentQuestionIndex + 1);
   };
 
-  // GESTION DU TÉLÉVERSEMENT RÉEL
   const handleFileChange = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Création d'une URL d'aperçu temporaire pour l'afficher dans le chat
     const previewUrl = URL.createObjectURL(file);
-
     let currentPhoto = photoFile;
     let currentAvatar = avatarFile;
 
@@ -179,7 +177,6 @@ export default function AnnoncesPage() {
       ]);
     }
 
-    // Si les deux fichiers sont présents dans la validation instantanée
     if (currentPhoto && currentAvatar) {
       setAnswers(prev => ({ ...prev, fichiers: "Images prêtes" }));
       advanceChat("Images téléversées", currentQuestionIndex + 1);
@@ -199,7 +196,9 @@ export default function AnnoncesPage() {
                     `• *Style de jeu :* ${answers.style || 'Non spécifié'}\n` +
                     `• *Constance :* ${answers.constance || 'Non spécifié'}\n` +
                     `• *Source d'info :* ${answers.source || 'Non spécifié'}\n` +
-                    `• *Motivation :* ${answers.motivation || 'Non spécifié'}\n\n` +
+                    `• *Motivation :* ${answers.motivation || 'Non spécifié'}\n` +
+                    `• *Téléphone :* ${answers.telephone || 'Non spécifié'}\n` +
+                    `• *Contact via :* ${answers.contact_platform || 'Non spécifié'}\n\n` +
                     `_Note : Mes deux images (Photo + Profil) sont prêtes sur mon appareil, je vous les envoie dès que la discussion s'ouvre !_`;
     return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   };
@@ -392,7 +391,6 @@ export default function AnnoncesPage() {
                         {msg.text}
                       </div>
                       
-                      {/* Si le message contient un aperçu d'image téléversée */}
                       {msg.isImage && msg.url && (
                         <div className="mt-1.5 max-w-[120px] aspect-square rounded-lg overflow-hidden border border-[#EE1C25]/40 bg-black">
                           <img src={msg.url} alt="Preview" className="w-full h-full object-cover" />
@@ -407,7 +405,7 @@ export default function AnnoncesPage() {
                         <ShieldCheck className="w-3.5 h-3.5" /> Fiche générée avec succès
                       </p>
                       <div className="text-[11px] font-body text-[#A1A1AA]">
-                        <p>Vos images et vos données ont été enregistrées localement sur votre terminal.</p>
+                        <p>Vos images et vos données de contact ont été enregistrées localement sur votre terminal.</p>
                       </div>
                     </motion.div>
                   )}
@@ -417,21 +415,8 @@ export default function AnnoncesPage() {
                 {/* ZONE D'INTERACTION INFERIEURE */}
                 <div className="p-4 bg-[#080B10] border-t border-[#1A1D24] space-y-3">
                   
-                  {/* INPUTS HTML RÉELS MASQUÉS */}
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    ref={photoInputRef} 
-                    className="hidden" 
-                    onChange={(e) => handleFileChange(e, 'photo')} 
-                  />
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    ref={avatarInputRef} 
-                    className="hidden" 
-                    onChange={(e) => handleFileChange(e, 'avatar')} 
-                  />
+                  <input type="file" accept="image/*" ref={photoInputRef} className="hidden" onChange={(e) => handleFileChange(e, 'photo')} />
+                  <input type="file" accept="image/*" ref={avatarInputRef} className="hidden" onChange={(e) => handleFileChange(e, 'avatar')} />
 
                   {/* CAS 1 : Boutons d'options */}
                   {!isFormComplete && currentQuestion?.type === 'options' && (
@@ -448,15 +433,13 @@ export default function AnnoncesPage() {
                     </div>
                   )}
 
-                  {/* CAS 2 : VRAI TÉLÉVERSEMENT DEPUIS L'APPAREIL */}
+                  {/* CAS 2 : Uploads Fichiers */}
                   {!isFormComplete && currentQuestion?.type === 'files' && (
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => photoInputRef.current.click()}
                         className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 text-xs font-gaming uppercase tracking-wider transition-all ${
-                          photoFile 
-                            ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' 
-                            : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
+                          photoFile ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
                         }`}
                       >
                         <Camera className="w-5 h-5" />
@@ -466,9 +449,7 @@ export default function AnnoncesPage() {
                       <button
                         onClick={() => avatarInputRef.current.click()}
                         className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 text-xs font-gaming uppercase tracking-wider transition-all ${
-                          avatarFile 
-                            ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' 
-                            : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
+                          avatarFile ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
                         }`}
                       >
                         <UserCheck className="w-5 h-5" />
@@ -477,7 +458,7 @@ export default function AnnoncesPage() {
                     </div>
                   )}
 
-                  {/* CAS 3 : Entrée texte */}
+                  {/* CAS 3 : Saisie texte (Pour pseudo, motivation, téléphone) */}
                   {!isFormComplete && currentQuestion?.type === 'text' && (
                     <form onSubmit={handleSendMessage} className="flex gap-2">
                       <input
@@ -493,7 +474,7 @@ export default function AnnoncesPage() {
                     </form>
                   )}
 
-                  {/* BOUTON DE SOUMISSION WHATSAPP */}
+                  {/* BOUTON WHATSAPP */}
                   <div className="pt-1">
                     {isFormComplete ? (
                       <a 
