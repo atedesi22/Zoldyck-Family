@@ -196,14 +196,32 @@ export const clanPlayers = [
     isCaptain: false,
     role: "Sniper",
     favoriteWeapon: "M82",
-    photo: "/assets/img/players/illumi.webp",
+    photo: "/assets/img/players/fzbot.webp",
     rank: "Grand Maître II",
     kd: "2.20",
     precision: "45.0%",
     joinedAt: "Avril 2025",
-    device: "iPhone 15 Pro",
+    device: "iPhone 13 Pro",
     playstyle: "Sniper de réserve, prêt à intervenir dans les modes où un tir de précision peut faire la différence.",
     socials: {}
   },
+  {
+    id: 11,
+    pseudo: "FZツbot",
+    gender: "male",
+    division: "T3",
+    type: "remplacant",
+    isCaptain: false,
+    role: "Objective",
+    favoriteWeapon: "M82",
+    photo: "/teams/T3/fzbot.JPG",
+    rank: "Légendaire",
+    kd: "2.10",
+    precision: "22.0%",
+    joinedAt: "Mai 2026",
+    device: "Iphone 12",
+    playstyle: "Joueur de réserve, prêt à intervenir dans les modes de capture et le maintien des zones Point Stratégique.",
+    socials: {}
+  }
   // Tu pourras dupliquer et remplir pour les divisions T2, T3, T4 de la même manière...
 ];
