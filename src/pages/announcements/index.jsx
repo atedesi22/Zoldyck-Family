@@ -80,15 +80,20 @@ export default function AnnoncesPage() {
 
   const [isBotOpen, setIsBotOpen] = useState(false);
   
-  // TOUS LES ÉTATS DU CHATBOT (Regroupés et sécurisés)
+  // ÉTATS DU CHATBOT
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [answers, setAnswers] = useState({});
   const [isFormComplete, setIsFormComplete] = useState(false);
-  const [photoUploaded, setPhotoUploaded] = useState(false);
-  const [avatarUploaded, setAvatarUploaded] = useState(false);
 
+  // ÉTATS POUR LES VRAIS FICHIERS LOCAUX
+  const [photoFile, setPhotoFile] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
+
+  // Références pour déclencher les clics sur les inputs masqués
+  const photoInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -100,8 +105,8 @@ export default function AnnoncesPage() {
     setCurrentQuestionIndex(0);
     setAnswers({});
     setIsFormComplete(false);
-    setPhotoUploaded(false);
-    setAvatarUploaded(false);
+    setPhotoFile(null);
+    setAvatarFile(null);
     setChatHistory([
       { sender: 'bot', text: "Salutations recrue. Je suis NovaAI, l'assistant tactique de Zoldyck. Commençons ton entretien d'intégration." },
       { sender: 'bot', text: RECRUITMENT_QUESTIONS[0].text }
@@ -147,23 +152,37 @@ export default function AnnoncesPage() {
     advanceChat(option, currentQuestionIndex + 1);
   };
 
-  const handleSimulateUpload = (type) => {
-    let currentPhoto = photoUploaded;
-    let currentAvatar = avatarUploaded;
+  // GESTION DU TÉLÉVERSEMENT RÉEL
+  const handleFileChange = (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Création d'une URL d'aperçu temporaire pour l'afficher dans le chat
+    const previewUrl = URL.createObjectURL(file);
+
+    let currentPhoto = photoFile;
+    let currentAvatar = avatarFile;
 
     if (type === 'photo') {
-      setPhotoUploaded(true);
-      currentPhoto = true;
-      setChatHistory(prev => [...prev, { sender: 'user', text: "📸 Photo de moi téléversée avec succès." }]);
+      setPhotoFile(file);
+      currentPhoto = file;
+      setChatHistory(prev => [
+        ...prev, 
+        { sender: 'user', text: `📸 Photo ajoutée : ${file.name}`, isImage: true, url: previewUrl }
+      ]);
     } else {
-      setAvatarUploaded(true);
-      currentAvatar = true;
-      setChatHistory(prev => [...prev, { sender: 'user', text: "📸 Capture d'écran de mon profil CODM téléversée." }]);
+      setAvatarFile(file);
+      currentAvatar = file;
+      setChatHistory(prev => [
+        ...prev, 
+        { sender: 'user', text: `🖼️ Profil CODM ajouté : ${file.name}`, isImage: true, url: previewUrl }
+      ]);
     }
 
+    // Si les deux fichiers sont présents dans la validation instantanée
     if (currentPhoto && currentAvatar) {
-      setAnswers(prev => ({ ...prev, fichiers: "Images fournies" }));
-      advanceChat("Images fournies", currentQuestionIndex + 1);
+      setAnswers(prev => ({ ...prev, fichiers: "Images prêtes" }));
+      advanceChat("Images téléversées", currentQuestionIndex + 1);
     }
   };
 
@@ -171,22 +190,21 @@ export default function AnnoncesPage() {
   const getWhatsAppLink = () => {
     const phoneNumber = "237690416147"; 
     const message = `*ENTRETIEN DE RECRUTEMENT CLAN ZOLDYCK*\n\n` +
-                    `• *Pseudo CODM :* ${answers.pseudo}\n` +
-                    `• *Sexe / Roster :* ${answers.sexe}\n` +
-                    `• *Device utilisé :* ${answers.device}\n` +
-                    `• *Ancienneté :* ${answers.anciennete}\n` +
-                    `• *Niveau estimé :* ${answers.niveau}\n` +
-                    `• *Rôle favori :* ${answers.role}\n` +
-                    `• *Style de jeu :* ${answers.style}\n` +
-                    `• *Constance :* ${answers.constance}\n` +
-                    `• *Source d'info :* ${answers.source}\n` +
-                    `• *Motivation :* ${answers.motivation}\n\n` +
-                    `_Note : Je prépare ma photo et mon screenshot de profil à envoyer dans la foulée du chat._`;
+                    `• *Pseudo CODM :* ${answers.pseudo || 'Non spécifié'}\n` +
+                    `• *Sexe / Roster :* ${answers.sexe || 'Non spécifié'}\n` +
+                    `• *Device utilisé :* ${answers.device || 'Non spécifié'}\n` +
+                    `• *Ancienneté :* ${answers.anciennete || 'Non spécifié'}\n` +
+                    `• *Niveau estimé :* ${answers.niveau || 'Non spécifié'}\n` +
+                    `• *Rôle favori :* ${answers.role || 'Non spécifié'}\n` +
+                    `• *Style de jeu :* ${answers.style || 'Non spécifié'}\n` +
+                    `• *Constance :* ${answers.constance || 'Non spécifié'}\n` +
+                    `• *Source d'info :* ${answers.source || 'Non spécifié'}\n` +
+                    `• *Motivation :* ${answers.motivation || 'Non spécifié'}\n\n` +
+                    `_Note : Mes deux images (Photo + Profil) sont prêtes sur mon appareil, je vous les envoie dès que la discussion s'ouvre !_`;
     return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   };
 
   const currentQuestion = RECRUITMENT_QUESTIONS[currentQuestionIndex];
-
 
   return (
     <div className="min-h-screen bg-[#080B10] text-[#EBEBEB] px-4 sm:px-6 lg:px-8 pt-24 md:pt-32 pb-24 relative">
@@ -358,7 +376,7 @@ export default function AnnoncesPage() {
                     <div className="w-2.5 h-2.5 rounded-full bg-[#EE1C25] animate-pulse" />
                     <div>
                       <p className="font-gaming text-xs uppercase tracking-widest text-[#EBEBEB]">NovaAI Tactique</p>
-                      <p className="text-[9px] font-body text-[#A1A1AA]">Questionnaire d'évaluation ({currentQuestionIndex + 1}/{RECRUITMENT_QUESTIONS.length})</p>
+                      <p className="text-[9px] font-body text-[#A1A1AA]">Questionnaire ({currentQuestionIndex + 1}/{RECRUITMENT_QUESTIONS.length})</p>
                     </div>
                   </div>
                   <button onClick={() => setIsBotOpen(false)} className="text-[#A1A1AA] hover:text-[#EE1C25] transition-colors"><X className="w-5 h-5" /></button>
@@ -367,33 +385,55 @@ export default function AnnoncesPage() {
                 {/* Historique des discussions */}
                 <div className="flex-1 p-4 overflow-y-auto space-y-4 scrollbar-none bg-[#080B10]/20">
                   {chatHistory.map((msg, index) => (
-                    <div key={index} className={`flex ${msg.sender === 'bot' ? 'justify-start' : 'justify-end'}`}>
+                    <div key={index} className={`flex flex-col ${msg.sender === 'bot' ? 'items-start' : 'items-end'}`}>
                       <div className={`max-w-[85%] rounded-xl px-4 py-2.5 text-xs font-body leading-relaxed ${
                         msg.sender === 'bot' ? 'bg-[#1A1D24] border border-[#1A1D24] text-[#EBEBEB]' : 'bg-[#EE1C25]/10 border border-[#EE1C25]/20 text-[#EE1C25] font-semibold'
-                      }`}>{msg.text}</div>
+                      }`}>
+                        {msg.text}
+                      </div>
+                      
+                      {/* Si le message contient un aperçu d'image téléversée */}
+                      {msg.isImage && msg.url && (
+                        <div className="mt-1.5 max-w-[120px] aspect-square rounded-lg overflow-hidden border border-[#EE1C25]/40 bg-black">
+                          <img src={msg.url} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                      )}
                     </div>
                   ))}
                   
                   {isFormComplete && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-[#080B10] border border-[#1A1D24] rounded-xl p-4 space-y-2 mt-2">
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-[#080B10] border border-[#1A1D24] rounded-xl p-4 space-y-2 mt-2 w-full">
                       <p className="text-[10px] font-gaming uppercase tracking-wider text-[#FFD700] flex items-center gap-1">
-                        <ShieldCheck className="w-3.5 h-3.5" /> Fiche d'évaluation :
+                        <ShieldCheck className="w-3.5 h-3.5" /> Fiche générée avec succès
                       </p>
-                      <div className="text-[11px] font-body space-y-1 text-[#A1A1AA]">
-                        <p>• <strong className="text-[#EBEBEB]">Pseudo:</strong> {answers.pseudo}</p>
-                        <p>• <strong className="text-[#EBEBEB]">Roster:</strong> {answers.sexe}</p>
-                        <p>• <strong className="text-[#EBEBEB]">Device:</strong> {answers.device}</p>
-                        <p>• <strong className="text-[#EBEBEB]">Niveau:</strong> {answers.niveau}</p>
+                      <div className="text-[11px] font-body text-[#A1A1AA]">
+                        <p>Vos images et vos données ont été enregistrées localement sur votre terminal.</p>
                       </div>
                     </motion.div>
                   )}
                   <div ref={chatEndRef} />
                 </div>
 
-                {/* ZONE DE CONTACT / INTERACTIONS */}
+                {/* ZONE D'INTERACTION INFERIEURE */}
                 <div className="p-4 bg-[#080B10] border-t border-[#1A1D24] space-y-3">
                   
-                  {/* OPTIONS CLICABLES */}
+                  {/* INPUTS HTML RÉELS MASQUÉS */}
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    ref={photoInputRef} 
+                    className="hidden" 
+                    onChange={(e) => handleFileChange(e, 'photo')} 
+                  />
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    ref={avatarInputRef} 
+                    className="hidden" 
+                    onChange={(e) => handleFileChange(e, 'avatar')} 
+                  />
+
+                  {/* CAS 1 : Boutons d'options */}
                   {!isFormComplete && currentQuestion?.type === 'options' && (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       {currentQuestion.options.map((opt) => (
@@ -408,38 +448,36 @@ export default function AnnoncesPage() {
                     </div>
                   )}
 
-                  {/* UPLOADS IMAGES */}
+                  {/* CAS 2 : VRAI TÉLÉVERSEMENT DEPUIS L'APPAREIL */}
                   {!isFormComplete && currentQuestion?.type === 'files' && (
                     <div className="grid grid-cols-2 gap-3">
                       <button
-                        onClick={() => handleSimulateUpload('photo')}
-                        disabled={photoUploaded}
+                        onClick={() => photoInputRef.current.click()}
                         className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 text-xs font-gaming uppercase tracking-wider transition-all ${
-                          photoUploaded 
+                          photoFile 
                             ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' 
                             : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
                         }`}
                       >
                         <Camera className="w-5 h-5" />
-                        <span>{photoUploaded ? "✓ Photo Reçue" : "Photo de moi"}</span>
+                        <span>{photoFile ? "✓ Photo Sélectionnée" : "Choisir ma Photo"}</span>
                       </button>
                       
                       <button
-                        onClick={() => handleSimulateUpload('avatar')}
-                        disabled={avatarUploaded}
+                        onClick={() => avatarInputRef.current.click()}
                         className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 text-xs font-gaming uppercase tracking-wider transition-all ${
-                          avatarUploaded 
+                          avatarFile 
                             ? 'bg-[#0E3BF0]/10 border-[#0E3BF0]/40 text-[#0E3BF0]' 
                             : 'bg-[#1A1D24]/60 border-[#1A1D24] text-[#EBEBEB] hover:border-[#EE1C25]'
                         }`}
                       >
                         <UserCheck className="w-5 h-5" />
-                        <span>{avatarUploaded ? "✓ Avatar Reçu" : "Mon Profil CODM"}</span>
+                        <span>{avatarFile ? "✓ Profil Sélectionné" : "Capture d'écran CODM"}</span>
                       </button>
                     </div>
                   )}
 
-                  {/* SAISIE TEXTE */}
+                  {/* CAS 3 : Entrée texte */}
                   {!isFormComplete && currentQuestion?.type === 'text' && (
                     <form onSubmit={handleSendMessage} className="flex gap-2">
                       <input
@@ -455,7 +493,7 @@ export default function AnnoncesPage() {
                     </form>
                   )}
 
-                  {/* BOUTON WHATSAPP SÉCURISÉ */}
+                  {/* BOUTON DE SOUMISSION WHATSAPP */}
                   <div className="pt-1">
                     {isFormComplete ? (
                       <a 
