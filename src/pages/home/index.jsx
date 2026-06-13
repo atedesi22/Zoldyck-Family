@@ -315,7 +315,7 @@ export default function HomePage() {
                                         <p className="text-[#A1A1AA] text-sm mt-1">{ann.date}</p>
                                     </div>
                                 </div>
-                                <span className={`sm:inline-block px-3 py-1 rounded font-semibold uppercase text-xs tracking-wider ${ann.type === 'Compétition' ? 'bg-[#EE1C25]/20 text-[#EE1C25]' : 'bg-[#0E3BF0]/20 text-[#0E3BF0]'}`}>
+                                <span className={`hidden sm:inline-block px-3 py-1 rounded font-semibold uppercase text-xs tracking-wider ${ann.type === 'Compétition' ? 'bg-[#EE1C25]/20 text-[#EE1C25]' : 'bg-[#0E3BF0]/20 text-[#0E3BF0]'}`}>
                                     {ann.type}
                                 </span>
                                 <ChevronsDown className="w-6 h-6 text-[#A1A1AA] rotate-[-90deg]"/>
