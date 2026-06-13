@@ -213,7 +213,7 @@ export const clanPlayers = [
     type: "remplacant",
     isCaptain: false,
     role: "Objective",
-    favoriteWeapon: "M82",
+    favoriteWeapon: "USS9",
     photo: "/teams/T3/fzbot.JPG",
     rank: "Légendaire",
     kd: "2.10",
